@@ -20,7 +20,7 @@ const Page = () => {
 
   const formHandler = (e) => {
     e.preventDefault();
-    const newTasks = [...mainTask, { title, description }];
+    const newTasks = [...mainTask, { title, description, completed: false }];
     setMainTask(newTasks);
     saveToLocalStorage(newTasks);
     setTitle("");
@@ -34,23 +34,52 @@ const Page = () => {
     saveToLocalStorage(copyTasks);
   };
 
+  const toggleCompletion = (index) => {
+    let updatedTasks = [...mainTask];
+    updatedTasks[index].completed = !updatedTasks[index].completed;
+    setMainTask(updatedTasks);
+    saveToLocalStorage(updatedTasks);
+  };
+
   let showTask = <p className="text-gray-400">No tasks yet...</p>;
   if (mainTask.length > 0) {
     showTask = mainTask.map((task, index) => (
       <div
         key={index}
-        className="flex justify-between items-center p-3 bg-zinc-800 rounded-lg mb-4"
+        className={`flex justify-between items-center p-3 bg-zinc-800 rounded-lg mb-4 ${
+          task.completed ? "line-through" : ""
+        }`}
       >
         <div>
-          <h2 className="text-xl text-zinc-300">{task.title}</h2>
-          <p className="text-zinc-400 text-sm">{task.description}</p>
+          <h2
+            className={`text-xl text-zinc-300 ${
+              task.completed ? "text-zinc-500" : ""
+            }`}
+          >
+            {task.title}
+          </h2>
+          <p
+            className={`text-zinc-400 text-sm ${
+              task.completed ? "text-zinc-600" : ""
+            }`}
+          >
+            {task.description}
+          </p>
         </div>
-        <button
-          className="px-2 py-1 bg-red-600 rounded-full"
-          onClick={() => deleteHandler(index)}
-        >
-          <i className="ri-delete-bin-line text-white text-lg"></i>
-        </button>
+        <div className="flex items-center space-x-4">
+          <input
+            type="checkbox"
+            className="w-4 h-4 text-orange-500 bg-zinc-700 border-zinc-600 rounded focus:ring-orange-600"
+            checked={task.completed}
+            onChange={() => toggleCompletion(index)}
+          />
+          <button
+            className="px-2 py-1 bg-red-600 rounded-full"
+            onClick={() => deleteHandler(index)}
+          >
+            <i className="ri-delete-bin-line text-white text-lg"></i>
+          </button>
+        </div>
       </div>
     ));
   }
